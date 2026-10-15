@@ -1,0 +1,22 @@
+{
+  "port": 8788,
+  "host": "127.0.0.1",
+  "backend": "gemini-cdp",
+  "modelId": "gemini-web",
+  "contextMode": "full",
+  "nameForAssistant": "角色",
+  "debug": false,
+  "clientMode": "browser",
+  "browser": "auto",
+  "browserPath": "",
+  "appPath": "",
+  "desktopEngine": "auto",
+  "autoLaunch": true,
+  "cdpPort": 9222,
+  "cdpEndpoint": "",
+  "targetId": "",
+  "launchTimeoutMs": 20000,
+  "newChatEachRequest": true,
+  "maxWaitMs": 180000,
+  "settleMs": 1200
+}
