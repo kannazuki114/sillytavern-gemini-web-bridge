@@ -1,12 +1,39 @@
-# Gemini Web Bridge · SillyTavern 服务端插件
+# Gemini Web Bridge · 酒馆前端扩展与本机后端
 
-让 SillyTavern 通过浏览器、Gemini 网页应用窗口或支持 CDP 的桌面客户端生成回复。插件随酒馆启动、退出时清理连接和请求，不再需要单独运行桥接进程。
+让 SillyTavern / TauriTavern 通过浏览器、Gemini 网页应用窗口或支持 CDP 的桌面客户端生成回复。
 
-## 安装
+从 **1.2.0** 起，项目同时包含可由扩展管理器识别的前端扩展和实际控制浏览器的本机后端：
 
-要求：**运行酒馆的 Node.js 为 22+**，浏览器或 Gemini 桌面客户端与酒馆在同一台机器上。插件运行时没有第三方 npm 依赖。
+| 入口 | 加载位置 | 功能 |
+| --- | --- | --- |
+| `manifest.json` → `index.js` + `style.css` | 酒馆的前端扩展目录 | 设置面板、连接与模型检测、应用 API 配置 |
+| `package.json` → `index.mjs` | SillyTavern 的 `plugins/` | 随酒馆启动和退出的 Node 后端 |
+| `server.mjs` | 单独运行，适合 TauriTavern | 提供同一套本机桥接 API |
 
-1. 将完整插件目录放入酒馆安装目录的 `plugins/gemini-web-bridge/`，目录内应直接包含 `package.json`、`index.mjs`、`config.json`、`lib/` 和 `backends/`。
+参考插件“游戏王查卡器 v2”使用第一种结构。此前版本只提供后端入口，无法在前端扩展面板按 manifest 加载；现已补齐完整前端。
+
+## 安装前端扩展
+
+前端包为 `gemini-web-bridge-extension-1.2.0.zip`，完整包为 `gemini-web-bridge-1.2.0.zip`。
+
+1. 解压前端包。确认 `gemini-web-bridge` 文件夹内直接包含 `manifest.json`、`index.js`、`settings.html` 和 `style.css`。
+2. TauriTavern 使用其本地扩展安装方式或扩展目录；SillyTavern 放到 `data/<用户>/extensions/gemini-web-bridge/`，或全局目录 `public/scripts/extensions/third-party/gemini-web-bridge/`。
+3. 刷新酒馆，在扩展设置中找到 **“Gemini 网页桥接”**。支持 ZIP 安装的宿主也可以导入前端包；SillyTavern 原版安装 ZIP 时手动解压，仓库 URL 安装要求仓库根目录有 manifest。
+4. 先按下节启动后端，再点击“检测连接与模型”与“应用到 API 连接”。
+
+前端是单文件经典脚本，也能以模块方式加载；静态面板模板已嵌入产物，文件夹或仓库改名后无需修改资源路径。前端本身不需要 Node.js。
+
+详细步骤见 [INSTALL.md](INSTALL.md)，结构符合 [SillyTavern 前端扩展规范](https://docs.sillytavern.app/for-contributors/writing-extensions/)。
+
+## 启动本机后端
+
+要求：**运行后端的 Node.js 为 22+**。SillyTavern 服务端插件使用酒馆的 Node.js；TauriTavern 使用单独的 Node.js 运行后端。浏览器或 Gemini 桌面客户端与后端在同一台机器上。后端运行时没有第三方 npm 依赖。
+
+TauriTavern：将完整包解压到本机可读写位置，运行 `start-gemini.bat` 登录 Gemini，再运行 `start-bridge-gemini.bat`，保持后端窗口开启。前端可继续连接已有的 1.1.0 后端。
+
+SillyTavern 可采用上述方式，也可将后端作为服务端插件自动启动：
+
+1. 将完整包放入酒馆安装目录的 `plugins/gemini-web-bridge/`，目录内应直接包含 `package.json`、`index.mjs`、`config.json`、`lib/` 和 `backends/`。
 2. 修改**酒馆根目录**的 `config.yaml`：
 
    ```yaml
@@ -21,7 +48,7 @@
    [gemini-web-bridge] 酒馆里填: 自定义地址 = http://127.0.0.1:8788/v1
    ```
 
-这是 **SillyTavern 服务端插件**，放入 `plugins/`；网页“扩展 → 安装扩展”用于前端扩展，不能用于安装本插件。加载方式依照 [SillyTavern 官方服务端插件文档](https://docs.sillytavern.app/for-contributors/server-plugins/)。
+后端随酒馆启动，退出时清理连接和请求；前端通过 manifest 单独加载，两个入口可以同时使用。服务端加载方式依照 [SillyTavern 官方文档](https://docs.sillytavern.app/for-contributors/server-plugins/)。同一个端口只运行一个后端实例。
 
 ## 选择浏览器或 Gemini 应用
 
@@ -58,6 +85,8 @@
 原理依据：[Edge 使用兼容 CDP 的接口](https://learn.microsoft.com/en-us/microsoft-edge/test-and-automation/devtools-protocol)、[Electron 调试启动参数](https://www.electronjs.org/docs/latest/api/command-line-switches)、[WebView2 调试配置](https://learn.microsoft.com/en-us/microsoft-edge/webview2/how-to/debug-visual-studio-code)。Chrome 调试需要[专用用户数据目录](https://developer.chrome.com/blog/remote-debugging-port)。
 
 ## 在酒馆中连接
+
+前端面板可保存本机地址、读取模型，并通过“应用到 API 连接”填写下表内容。设置修改在点击应用时生效，加载扩展本身不会切换当前主 API。“读取酒馆后端”用于发现已安装服务端插件的地址；TauriTavern 使用本机地址直接连接即可。缺少兼容宿主接口时会提示手动设置。
 
 打开“API 连接”，选择“聊天补全 → 自定义 / OpenAI 兼容”：
 
@@ -120,16 +149,19 @@
 - 调试端点不可用：运行 `start-gemini.bat`，确认窗口仍开启。普通浏览器或应用窗口未必开放调试端口。
 - 报登录失效、输入框找不到、超时：先在当前调试浏览器/应用内手动确认 Gemini 可用，再运行 `node tools/inspect-gemini.mjs` 检查选择器。
 - 网页改版时，候选选择器集中在 `backends/gemini-cdp.mjs` 的 `SEL` 中。
-- 插件针对 SillyTavern 的 Node.js 插件接口；其他酒馆实现需支持相同的插件加载方式。
+- 前端使用 `SillyTavern.getContext()` 和扩展设置宿主，已参考提供的 TauriTavern 扩展结构处理；TauriTavern 后端请使用独立服务入口。前端 DOM 与兼容接口测试不等同于所有酒馆版本的现场验证。
 
 ## 开发与自测
 
 ```powershell
 npm install
+npm run build
 npm test
 ```
 
-开发测试用 Express 验证官方路由契约；它是 devDependency，插件运行时使用酒馆传入的 router，无需安装额外依赖。
+`npm run build` 从 `web/extension.js`、`settings.html` 和包版本生成 `index.js`，同时同步 manifest 版本。请修改源文件后重建，避免直接改生成产物。
+
+开发测试使用 Express、jsdom 和 jQuery 验证后端路由、前端挂载与宿主事件；这些都是 devDependencies，已构建前端和后端运行时无需安装它们。`tools/package-plugin.ps1` 会先构建，再生成完整包和前端包。
 
 保留可选的独立诊断入口：
 
@@ -143,6 +175,10 @@ node test/page-scripts.mjs
 
 ## 文件
 
+- `manifest.json`：酒馆前端扩展描述与加载入口。
+- `index.js`：已构建的前端单文件脚本。
+- `web/extension.js`、`settings.html`、`style.css`：前端源文件、面板模板和主题样式。
+- `INSTALL.md`：前端扩展安装与后端配套说明。
 - `index.mjs`：酒馆插件的 info / init / exit 生命周期。
 - `lib/service.mjs`：配置、兼容 API 监听器与关闭清理。
 - `lib/bridge.mjs`：OpenAI 兼容接口、校验、SSE、队列与取消。

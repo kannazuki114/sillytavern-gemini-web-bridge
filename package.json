@@ -1,19 +1,22 @@
 {
   "name": "sillytavern-gemini-web-bridge",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "SillyTavern server plugin for a local Gemini web session through Chrome CDP",
+  "description": "SillyTavern/TauriTavern frontend extension and local Gemini web bridge backend",
   "type": "module",
   "main": "index.mjs",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs test/regressions.mjs && node test/page-scripts.mjs",
+    "test": "npm run build && node --test test/*.test.mjs test/regressions.mjs && node test/page-scripts.mjs",
     "start": "node server.mjs",
-    "start:echo": "node server.mjs --backend echo"
+    "start:echo": "node server.mjs --backend echo",
+    "build": "node tools/build-extension.mjs"
   },
   "devDependencies": {
-    "express": "^4.22.3"
+    "express": "^4.22.3",
+    "jquery": "^3.7.1",
+    "jsdom": "^26.1.0"
   }
 }

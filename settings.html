@@ -1,0 +1,30 @@
+<section id="gwb_settings" class="gwb-panel" aria-label="Gemini 网页桥接设置">
+  <details open>
+    <summary><strong>Gemini 网页桥接</strong> <small data-gwb="version"></small></summary>
+    <div class="gwb-content">
+      <p class="gwb-note">前端扩展已加载。使用前需运行本机桥接后端，并在调试浏览器或 Gemini 应用中完成登录。</p>
+      <label for="gwb_base_url">本机桥接地址</label>
+      <input id="gwb_base_url" class="text_pole" type="url" spellcheck="false" placeholder="http://127.0.0.1:8788/v1" autocomplete="off" />
+      <label for="gwb_model">模型 ID</label>
+      <input id="gwb_model" class="text_pole" type="text" list="gwb_models" placeholder="gemini-web" autocomplete="off" />
+      <datalist id="gwb_models"></datalist>
+      <label class="gwb-check" for="gwb_stream"><input id="gwb_stream" type="checkbox" /> 使用 SSE 传输（Gemini 正文稳定后返回）</label>
+      <div class="gwb-actions">
+        <button id="gwb_check" class="menu_button" type="button">检测连接与模型</button>
+        <button id="gwb_discover" class="menu_button" type="button">读取酒馆后端</button>
+        <button id="gwb_apply" class="menu_button" type="button">应用到 API 连接</button>
+      </div>
+      <p id="gwb_status" class="gwb-status" role="status" aria-live="polite">尚未检测连接。</p>
+      <details class="gwb-help">
+        <summary>启动与连接说明</summary>
+        <ol>
+          <li>首次使用：在完整后端包内运行 <code>start-gemini.bat</code>，登录 Gemini。</li>
+          <li>SillyTavern 可将完整后端包放入 <code>plugins/gemini-web-bridge</code> 并开启 <code>enableServerPlugins</code>。TauriTavern 或未启用服务端插件时，运行 <code>start-bridge-gemini.bat</code>，并保持服务窗口开启。</li>
+          <li>点击“检测连接与模型”，再点击“应用到 API 连接”；本机后端无需真实 API Key。</li>
+        </ol>
+        <p>前端面板无法直接启动本机程序。浏览器 / 网页应用 / 桌面客户端的选择请在后端 <code>config.json</code> 中设置。</p>
+        <p>“读取酒馆后端”仅适用于已加载本项目服务端插件的 SillyTavern。普通连接检测不会发送对话或触发 Gemini 生成。</p>
+      </details>
+    </div>
+  </details>
+</section>

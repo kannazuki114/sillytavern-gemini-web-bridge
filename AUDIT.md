@@ -1,5 +1,7 @@
 # 项目运行与缺陷检查报告
 
+> 1.2.0 前端扩展更新：参照提供的查卡器扩展，新增根目录 manifest.json、index.js、settings.html 和 style.css。单文件前端脚本提供设置面板、连接检测、模型读取、后端发现及 API 设置应用；保留 index.mjs 服务端入口和 server.mjs 独立后端。生成完整包与单独前端包，安装流程见 INSTALL.md。共 33 项回归测试（包含前端 DOM、jQuery 事件与真实 HTTP 对接）和 7 项页面脚本检查通过。未在用户实际 TauriTavern 会话中安装或验证已登录 Gemini 的真实对话。
+
 > 修复与插件化更新：本文下方保留的是修复前的检查记录。报告列出的十类问题已在当前代码中处理；项目现提供 SillyTavern 服务端插件入口 `index.mjs`，随酒馆启动本机兼容接口并在退出时清理。安装方法以 README.md 为准。
 >
 > 验证覆盖原有接口 smoke、HTTP 校验和取消、CDP 超时与断线、页面等待与旧回答隔离、文本修订、实际 Express 插件加载及端口冲突。真实已登录 Gemini 与完整酒馆部署仍需现场验证。Gemini SSE 正文调整为回答稳定后发送，以保证内容一致。

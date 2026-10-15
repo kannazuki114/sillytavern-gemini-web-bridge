@@ -1,0 +1,23 @@
+#gwb_settings {
+  margin-block: 0.6rem;
+  border: 1px solid var(--SmartThemeBorderColor, #7776);
+  border-radius: 0.6rem;
+  color: var(--SmartThemeBodyColor, inherit);
+}
+#gwb_settings > details > summary { padding: 0.8rem; cursor: pointer; }
+#gwb_settings .gwb-content { padding: 0 0.8rem 0.8rem; display: grid; gap: 0.5rem; }
+#gwb_settings input[type="url"], #gwb_settings input[type="text"] { width: 100%; box-sizing: border-box; min-width: 0; }
+#gwb_settings .gwb-note, #gwb_settings .gwb-help { font-size: 0.9em; opacity: 0.85; }
+#gwb_settings .gwb-note { margin-block: 0 0.4rem; }
+#gwb_settings .gwb-check { display: flex; align-items: center; gap: 0.5rem; }
+#gwb_settings .gwb-check input { width: auto; }
+#gwb_settings .gwb-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+#gwb_settings .gwb-actions button { margin: 0; cursor: pointer; }
+#gwb_settings .gwb-actions button:disabled { opacity: 0.5; cursor: wait; }
+#gwb_settings .gwb-status { margin: 0; padding: 0.6rem; border-radius: 0.4rem; background: #7772; white-space: pre-wrap; overflow-wrap: anywhere; }
+#gwb_settings .gwb-status[data-level="success"] { border-left: 3px solid #4eab83; }
+#gwb_settings .gwb-status[data-level="error"] { border-left: 3px solid #d98181; }
+#gwb_settings .gwb-help summary { cursor: pointer; padding-block: 0.4rem; }
+#gwb_settings .gwb-help ol { padding-left: 1.5rem; }
+#gwb_settings .gwb-help li { margin-block: 0.5rem; }
+#gwb_settings small { opacity: 0.7; font-weight: normal; }
