@@ -2,10 +2,15 @@
 // 前端源文件。运行 npm run build 生成根目录 index.js（兼容经典脚本和模块加载）。
 (function (root) {
   'use strict';
-  const VERSION = "1.2.0";
-  const TEMPLATE = "<section id=\"gwb_settings\" class=\"gwb-panel\" aria-label=\"Gemini 网页桥接设置\">\n  <details open>\n    <summary><strong>Gemini 网页桥接</strong> <small data-gwb=\"version\"></small></summary>\n    <div class=\"gwb-content\">\n      <p class=\"gwb-note\">前端扩展已加载。使用前需运行本机桥接后端，并在调试浏览器或 Gemini 应用中完成登录。</p>\n      <label for=\"gwb_base_url\">本机桥接地址</label>\n      <input id=\"gwb_base_url\" class=\"text_pole\" type=\"url\" spellcheck=\"false\" placeholder=\"http://127.0.0.1:8788/v1\" autocomplete=\"off\" />\n      <label for=\"gwb_model\">模型 ID</label>\n      <input id=\"gwb_model\" class=\"text_pole\" type=\"text\" list=\"gwb_models\" placeholder=\"gemini-web\" autocomplete=\"off\" />\n      <datalist id=\"gwb_models\"></datalist>\n      <label class=\"gwb-check\" for=\"gwb_stream\"><input id=\"gwb_stream\" type=\"checkbox\" /> 使用 SSE 传输（Gemini 正文稳定后返回）</label>\n      <div class=\"gwb-actions\">\n        <button id=\"gwb_check\" class=\"menu_button\" type=\"button\">检测连接与模型</button>\n        <button id=\"gwb_discover\" class=\"menu_button\" type=\"button\">读取酒馆后端</button>\n        <button id=\"gwb_apply\" class=\"menu_button\" type=\"button\">应用到 API 连接</button>\n      </div>\n      <p id=\"gwb_status\" class=\"gwb-status\" role=\"status\" aria-live=\"polite\">尚未检测连接。</p>\n      <details class=\"gwb-help\">\n        <summary>启动与连接说明</summary>\n        <ol>\n          <li>首次使用：在完整后端包内运行 <code>start-gemini.bat</code>，登录 Gemini。</li>\n          <li>SillyTavern 可将完整后端包放入 <code>plugins/gemini-web-bridge</code> 并开启 <code>enableServerPlugins</code>。TauriTavern 或未启用服务端插件时，运行 <code>start-bridge-gemini.bat</code>，并保持服务窗口开启。</li>\n          <li>点击“检测连接与模型”，再点击“应用到 API 连接”；本机后端无需真实 API Key。</li>\n        </ol>\n        <p>前端面板无法直接启动本机程序。浏览器 / 网页应用 / 桌面客户端的选择请在后端 <code>config.json</code> 中设置。</p>\n        <p>“读取酒馆后端”仅适用于已加载本项目服务端插件的 SillyTavern。普通连接检测不会发送对话或触发 Gemini 生成。</p>\n      </details>\n    </div>\n  </details>\n</section>\n";
+  const VERSION = "1.4.0";
+  const TEMPLATE = "<section id=\"gwb_settings\" class=\"gwb-panel\" aria-label=\"Gemini / Codex 桥接设置\">\n  <details open>\n    <summary><strong>Gemini / Codex 桥接</strong> <small data-gwb=\"version\"></small></summary>\n    <div class=\"gwb-content\">\n      <p class=\"gwb-note\">选择已登录的 Gemini 或本机 Codex。TauriTavern 需保持对应的桥接后端运行。</p>\n      <label for=\"gwb_mode\">连接模式</label>\n      <select id=\"gwb_mode\" class=\"text_pole\" aria-describedby=\"gwb_mode_help\">\n        <option value=\"gemini\">Gemini 浏览器 / 应用</option>\n        <option value=\"codex\">Codex 本机登录</option>\n        <option value=\"echo\">Echo 接口自测</option>\n      </select>\n      <p id=\"gwb_mode_help\" class=\"gwb-note\"></p>\n      <label for=\"gwb_base_url\">本机桥接地址</label>\n      <input id=\"gwb_base_url\" class=\"text_pole\" type=\"url\" spellcheck=\"false\" placeholder=\"http://127.0.0.1:8788/v1\" autocomplete=\"off\" />\n      <label for=\"gwb_model\">模型 ID</label>\n      <input id=\"gwb_model\" class=\"text_pole\" type=\"text\" list=\"gwb_models\" placeholder=\"gemini-web\" autocomplete=\"off\" />\n      <datalist id=\"gwb_models\"></datalist>\n      <label class=\"gwb-check\" for=\"gwb_stream\"><input id=\"gwb_stream\" type=\"checkbox\" /> 使用 SSE 传输（正文完成后返回）</label>\n      <div class=\"gwb-actions\">\n        <button id=\"gwb_check\" class=\"menu_button\" type=\"button\">检测连接与模型</button>\n        <button id=\"gwb_discover\" class=\"menu_button\" type=\"button\">读取酒馆后端</button>\n        <button id=\"gwb_apply\" class=\"menu_button\" type=\"button\">应用到 API 连接</button>\n      </div>\n      <p id=\"gwb_status\" class=\"gwb-status\" role=\"status\" aria-live=\"polite\">尚未检测连接。</p>\n      <details class=\"gwb-help\" id=\"gwb_test_panel\">\n        <summary>测试生成（支持 TauriTavern）</summary>\n        <div class=\"gwb-test-content\">\n          <p id=\"gwb_test_help\" class=\"gwb-note\">仅发送下方测试文字，不发送角色卡或当前聊天。Gemini / Codex 会实际生成并使用账号额度；结果不会写入聊天记录。</p>\n          <label for=\"gwb_test_prompt\">测试消息</label>\n          <textarea id=\"gwb_test_prompt\" class=\"text_pole\" rows=\"4\" maxlength=\"4000\" style=\"resize: none\" aria-describedby=\"gwb_test_help gwb_test_status\">请只回复：连接测试成功。</textarea>\n          <div class=\"gwb-actions\">\n            <button id=\"gwb_test\" class=\"menu_button\" type=\"button\">发送测试</button>\n            <button id=\"gwb_stop\" class=\"menu_button\" type=\"button\" disabled>停止测试</button>\n          </div>\n          <p id=\"gwb_test_status\" class=\"gwb-status\" role=\"status\" aria-live=\"polite\">尚未发送测试。</p>\n          <pre id=\"gwb_test_result\" class=\"gwb-result\" aria-label=\"测试回复\" tabindex=\"0\"></pre>\n        </div>\n      </details>\n      <details class=\"gwb-help\">\n        <summary>启动与连接说明</summary>\n        <ol>\n          <li>Gemini：运行 <code>start-gemini.bat</code> 登录，再运行 <code>start-bridge-gemini.bat</code>。Codex：先执行 <code>codex login</code>，再运行 <code>start-bridge-codex.bat</code>。</li>\n          <li>SillyTavern 可将完整后端包放入 <code>plugins/gemini-web-bridge</code> 并开启 <code>enableServerPlugins</code>。TauriTavern 或未启用服务端插件时，运行 <code>start-bridge-gemini.bat</code>，并保持服务窗口开启。</li>\n          <li>点击“检测连接与模型”，再点击“应用到 API 连接”；本机后端无需真实 API Key。</li>\n        </ol>\n        <p>前端面板无法直接启动本机程序。浏览器 / 网页应用 / 桌面客户端的选择请在后端 <code>config.json</code> 中设置。</p>\n        <p>“读取酒馆后端”仅适用于已加载本项目服务端插件的 SillyTavern。TauriTavern 直接选择连接模式并检测；“发送测试”可独立验证生成。普通连接检测不会触发模型生成。</p>\n      </details>\n    </div>\n  </details>\n</section>\n";
   const KEY = 'gemini-web-bridge';
-  const DEFAULTS = { baseUrl: 'http://127.0.0.1:8788/v1', model: 'gemini-web', stream: true };
+  const MODES = {
+    gemini: { baseUrl: 'http://127.0.0.1:8788/v1', model: 'gemini-web', backend: 'gemini-cdp', help: '运行 start-bridge-gemini.bat，并在调试浏览器或 Gemini 应用中登录。' },
+    codex: { baseUrl: 'http://127.0.0.1:8789/v1', model: 'codex-local', backend: 'codex', help: '使用本机已登录的 Codex CLI。运行 start-bridge-codex.bat；无需填写 API 密钥。' },
+    echo: { baseUrl: 'http://127.0.0.1:8788/v1', model: 'gemini-web', backend: 'echo', help: '运行 start-bridge.bat，仅验证接口，不调用模型。' },
+  };
+  const DEFAULTS = { baseUrl: MODES.gemini.baseUrl, model: MODES.gemini.model, stream: true, mode: 'gemini' };
   const doc = root.document;
   if (root.GeminiWebBridge && root.GeminiWebBridge.version === VERSION) {
     root.GeminiWebBridge.activate().catch((e) => console.error('[Gemini Web Bridge]', e));
@@ -43,27 +48,48 @@
     return url.origin + '/v1';
   }
   async function jsonRequest(url, options = {}) {
+    const { timeoutMs = 8000, signal, ...requestOptions } = options;
     const controller = new root.AbortController();
-    const timer = root.setTimeout(() => controller.abort(), 8000);
+    const abort = () => controller.abort();
+    signal?.addEventListener('abort', abort, { once: true });
+    if (signal?.aborted) abort();
+    const timer = root.setTimeout(abort, timeoutMs);
     try {
-      const response = await root.fetch(url, { cache: 'no-store', ...options, signal: controller.signal });
+      const response = await root.fetch(url, { cache: 'no-store', ...requestOptions, signal: controller.signal });
       let data;
       try { data = await response.json(); } catch { throw new Error('返回的不是 JSON，请确认该地址是 Gemini 桥接服务'); }
       if (!response.ok) throw new Error(data?.error?.message || 'HTTP ' + response.status);
       return data;
     } catch (e) {
-      if (controller.signal.aborted) throw new Error('连接超时，请确认本机桥接服务正在运行');
+      if (signal?.aborted) throw new Error('测试已停止。');
+      if (controller.signal.aborted) throw new Error('请求超时，请确认本机后端状态或稍后重试');
       throw e;
-    } finally { root.clearTimeout(timer); }
+    } finally { root.clearTimeout(timer); signal?.removeEventListener('abort', abort); }
   }
-  async function checkConnection(value) {
+  async function checkConnection(value, mode, signal) {
     const baseUrl = normalizeBaseUrl(value);
-    const health = await jsonRequest(new URL('/health', baseUrl).href);
-    if (health?.ok !== true || !['echo', 'gemini-cdp'].includes(health.backend)) throw new Error('该地址未返回 Gemini 桥接服务状态');
-    const models = await jsonRequest(baseUrl + '/models');
+    const health = await jsonRequest(new URL('/health', baseUrl).href, { signal, timeoutMs: 20000 });
+    if (health?.ok !== true || !['echo', 'gemini-cdp', 'codex'].includes(health.backend)) throw new Error('该地址未返回 Gemini / Codex 桥接服务状态');
+    if (mode && MODES[mode]?.backend !== health.backend) throw new Error('连接模式不匹配：此地址实际运行的是 ' + health.backend + '，请切换模式或填写对应后端地址。');
+    if (health.runtime?.ready === false) throw new Error(health.runtime.message || '本机模型后端尚未就绪');
+    const models = await jsonRequest(baseUrl + '/models', { signal });
     if (!Array.isArray(models?.data) || !models.data.every((model) => typeof model?.id === 'string')) throw new Error('模型列表格式不正确');
     if (!models.data.length) throw new Error('后端未提供任何模型');
     return { baseUrl, health, models: models.data.map((model) => model.id) };
+  }
+  async function testGeneration(value, prompt, signal) {
+    const text = String(prompt || '').trim();
+    if (!text || text.length > 4000) throw new Error('测试消息需为 1–4000 个字符');
+    const connection = await checkConnection(value.baseUrl, value.mode, signal);
+    if (signal?.aborted) throw new Error('测试已停止。');
+    if (!connection.models.includes(value.model)) throw new Error('模型 ID 不匹配，请先检测连接与模型');
+    const data = await jsonRequest(connection.baseUrl + '/chat/completions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal, timeoutMs: 240000,
+      body: JSON.stringify({ model: value.model, stream: false, messages: [{ role: 'user', content: text }] }),
+    });
+    const reply = data?.choices?.[0]?.message?.content;
+    if (typeof reply !== 'string' || !reply.trim()) throw new Error('后端未返回有效助手正文');
+    return { reply, backend: connection.health.backend };
   }
   async function discoverBackend() {
     const c = context();
@@ -114,12 +140,16 @@
   }
   function readPanel(panel) {
     return {
+      mode: panel.querySelector('#gwb_mode').value,
       baseUrl: normalizeBaseUrl(panel.querySelector('#gwb_base_url').value),
       model: panel.querySelector('#gwb_model').value.trim(),
       stream: panel.querySelector('#gwb_stream').checked,
     };
   }
   function fillPanel(panel, value) {
+    const mode = MODES[value.mode] ? value.mode : 'gemini';
+    panel.querySelector('#gwb_mode').value = mode;
+    panel.querySelector('#gwb_mode_help').textContent = MODES[mode].help;
     panel.querySelector('#gwb_base_url').value = value.baseUrl;
     panel.querySelector('#gwb_model').value = value.model;
     panel.querySelector('#gwb_stream').checked = value.stream;
@@ -127,6 +157,18 @@
   function bindPanel(panel) {
     panel.querySelector('[data-gwb="version"]').textContent = 'v' + VERSION;
     fillPanel(panel, settings());
+    panel.querySelector('#gwb_mode').addEventListener('change', () => {
+      const old = settings();
+      const mode = panel.querySelector('#gwb_mode').value;
+      try {
+        const current = readPanel(panel);
+        const profiles = { ...old.profiles, [old.mode]: { ...current, mode: old.mode } };
+        const selected = profiles[mode] || { baseUrl: MODES[mode].baseUrl, model: MODES[mode].model, stream: old.stream };
+        const next = save({ ...selected, mode, profiles });
+        fillPanel(panel, next);
+        status(panel, '连接模式已选择。' + MODES[mode].help + '\n检测成功后再应用到 API 连接。');
+      } catch (e) { panel.querySelector('#gwb_mode').value = old.mode; status(panel, e.message, 'error'); }
+    });
     for (const id of ['#gwb_base_url', '#gwb_model', '#gwb_stream']) {
       panel.querySelector(id).addEventListener('change', () => {
         try { save(readPanel(panel)); status(panel, '扩展设置已保存，尚未修改 API 连接。'); }
@@ -135,7 +177,7 @@
     }
     function button(id, action, hint = '') {
       panel.querySelector(id).addEventListener('click', async () => {
-        const buttons = Array.from(panel.querySelectorAll('button'));
+        const buttons = Array.from(panel.querySelectorAll('input, select, textarea, button:not(#gwb_stop)'));
         buttons.forEach((node) => { node.disabled = true; });
         status(panel, '正在处理…');
         try { await action(); }
@@ -146,6 +188,7 @@
     button('#gwb_check', async () => {
       const result = await checkConnection(panel.querySelector('#gwb_base_url').value);
       const current = readPanel(panel);
+      current.mode = Object.keys(MODES).find((mode) => MODES[mode].backend === result.health.backend);
       current.model = result.models.includes(current.model) ? current.model : result.models[0];
       current.baseUrl = result.baseUrl;
       const list = panel.querySelector('#gwb_models');
@@ -154,8 +197,8 @@
       fillPanel(panel, current);
       save(current);
       status(panel, '桥接服务已连接 · 后端: ' + result.health.backend + ' · 模型: ' + result.models.join(', ') +
-        (result.health.backend === 'echo' ? '\n当前为 echo 自测后端，不会调用 Gemini。' : '\n此检测只确认桥接接口存活，Google 登录与实际生成需发送消息验证。'), 'success');
-    }, '请先启动完整后端包中的 start-bridge-gemini.bat；如已启动，请检查地址、CORS 或本机网络访问权限。');
+        (result.health.backend === 'echo' ? '\n当前为 echo 自测后端，不会调用模型。' : result.health.backend === 'codex' ? '\nCodex CLI 已就绪，可展开“测试生成”发送测试。' : '\n接口已连接；Gemini 登录与实际生成请使用“测试生成”验证。'), 'success');
+    }, '请先运行对应的 start-bridge-gemini.bat 或 start-bridge-codex.bat；如已启动，请检查地址或本机网络访问权限。');
     button('#gwb_discover', async () => {
       const found = await discoverBackend();
       const value = { ...settings(), ...found, stream: panel.querySelector('#gwb_stream').checked };
@@ -166,6 +209,50 @@
     button('#gwb_apply', async () => {
       const value = applyConnection(readPanel(panel));
       status(panel, 'API 已设为 聊天补全 → 自定义\n地址: ' + value.baseUrl + '\n模型: ' + value.model + '\n请在 API 页面点击连接并发送测试消息。', 'success');
+    });
+    let testController = null;
+    const testStatus = panel.querySelector('#gwb_test_status');
+    const result = panel.querySelector('#gwb_test_result');
+    const prompt = panel.querySelector('#gwb_test_prompt');
+    panel.querySelector('#gwb_test').addEventListener('click', async () => {
+      if (testController) return;
+      const controls = Array.from(panel.querySelectorAll('input, select, textarea, button:not(#gwb_stop)'));
+      let value;
+      try {
+        value = readPanel(panel);
+        if (!prompt.value.trim() || prompt.value.trim().length > 4000) throw new Error('请填写 1–4000 个字符的测试消息');
+      } catch (e) {
+        testStatus.textContent = e.message;
+        testStatus.dataset.level = 'error';
+        prompt.setAttribute('aria-invalid', 'true'); prompt.focus(); return;
+      }
+      prompt.removeAttribute('aria-invalid');
+      testController = new root.AbortController();
+      const started = Date.now();
+      controls.forEach((control) => { control.disabled = true; });
+      panel.querySelector('#gwb_stop').disabled = false;
+      panel.querySelector('#gwb_test_panel').setAttribute('aria-busy', 'true');
+      result.textContent = '';
+      testStatus.dataset.level = '';
+      testStatus.textContent = '正在验证连接并等待模型回复…';
+      try {
+        const answer = await testGeneration(value, prompt.value, testController.signal);
+        if (testController.signal.aborted) throw new Error('测试已停止。');
+        result.textContent = answer.reply;
+        testStatus.textContent = (answer.backend === 'echo' ? '接口自测完成（未调用模型）' : '生成测试成功') + ' · ' + ((Date.now() - started) / 1000).toFixed(1) + ' 秒';
+        testStatus.dataset.level = 'success';
+      } catch (e) { testStatus.textContent = e.message || String(e); testStatus.dataset.level = testController.signal.aborted ? '' : 'error'; }
+      finally {
+        testController = null;
+        controls.forEach((control) => { control.disabled = false; });
+        panel.querySelector('#gwb_stop').disabled = true;
+        panel.querySelector('#gwb_test_panel').removeAttribute('aria-busy');
+      }
+    });
+    panel.querySelector('#gwb_stop').addEventListener('click', () => {
+      testController?.abort();
+      testStatus.textContent = '正在停止测试…';
+      panel.querySelector('#gwb_stop').disabled = true;
     });
   }
   function waitHost() {
@@ -198,7 +285,7 @@
     })().finally(() => { mounting = null; });
     return mounting;
   }
-  root.GeminiWebBridge = { version: VERSION, activate, settings, normalizeBaseUrl, checkConnection, discoverBackend, applyConnection };
+  root.GeminiWebBridge = { version: VERSION, activate, settings, normalizeBaseUrl, checkConnection, testGeneration, discoverBackend, applyConnection };
   if (doc) {
     const boot = () => activate().catch((e) => { console.error('[Gemini Web Bridge]', e); if (activePanel) status(activePanel, e.message, 'error'); });
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();

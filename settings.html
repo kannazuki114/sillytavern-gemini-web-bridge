@@ -1,29 +1,50 @@
-<section id="gwb_settings" class="gwb-panel" aria-label="Gemini 网页桥接设置">
+<section id="gwb_settings" class="gwb-panel" aria-label="Gemini / Codex 桥接设置">
   <details open>
-    <summary><strong>Gemini 网页桥接</strong> <small data-gwb="version"></small></summary>
+    <summary><strong>Gemini / Codex 桥接</strong> <small data-gwb="version"></small></summary>
     <div class="gwb-content">
-      <p class="gwb-note">前端扩展已加载。使用前需运行本机桥接后端，并在调试浏览器或 Gemini 应用中完成登录。</p>
+      <p class="gwb-note">选择已登录的 Gemini 或本机 Codex。TauriTavern 需保持对应的桥接后端运行。</p>
+      <label for="gwb_mode">连接模式</label>
+      <select id="gwb_mode" class="text_pole" aria-describedby="gwb_mode_help">
+        <option value="gemini">Gemini 浏览器 / 应用</option>
+        <option value="codex">Codex 本机登录</option>
+        <option value="echo">Echo 接口自测</option>
+      </select>
+      <p id="gwb_mode_help" class="gwb-note"></p>
       <label for="gwb_base_url">本机桥接地址</label>
       <input id="gwb_base_url" class="text_pole" type="url" spellcheck="false" placeholder="http://127.0.0.1:8788/v1" autocomplete="off" />
       <label for="gwb_model">模型 ID</label>
       <input id="gwb_model" class="text_pole" type="text" list="gwb_models" placeholder="gemini-web" autocomplete="off" />
       <datalist id="gwb_models"></datalist>
-      <label class="gwb-check" for="gwb_stream"><input id="gwb_stream" type="checkbox" /> 使用 SSE 传输（Gemini 正文稳定后返回）</label>
+      <label class="gwb-check" for="gwb_stream"><input id="gwb_stream" type="checkbox" /> 使用 SSE 传输（正文完成后返回）</label>
       <div class="gwb-actions">
         <button id="gwb_check" class="menu_button" type="button">检测连接与模型</button>
         <button id="gwb_discover" class="menu_button" type="button">读取酒馆后端</button>
         <button id="gwb_apply" class="menu_button" type="button">应用到 API 连接</button>
       </div>
       <p id="gwb_status" class="gwb-status" role="status" aria-live="polite">尚未检测连接。</p>
+      <details class="gwb-help" id="gwb_test_panel">
+        <summary>测试生成（支持 TauriTavern）</summary>
+        <div class="gwb-test-content">
+          <p id="gwb_test_help" class="gwb-note">仅发送下方测试文字，不发送角色卡或当前聊天。Gemini / Codex 会实际生成并使用账号额度；结果不会写入聊天记录。</p>
+          <label for="gwb_test_prompt">测试消息</label>
+          <textarea id="gwb_test_prompt" class="text_pole" rows="4" maxlength="4000" style="resize: none" aria-describedby="gwb_test_help gwb_test_status">请只回复：连接测试成功。</textarea>
+          <div class="gwb-actions">
+            <button id="gwb_test" class="menu_button" type="button">发送测试</button>
+            <button id="gwb_stop" class="menu_button" type="button" disabled>停止测试</button>
+          </div>
+          <p id="gwb_test_status" class="gwb-status" role="status" aria-live="polite">尚未发送测试。</p>
+          <pre id="gwb_test_result" class="gwb-result" aria-label="测试回复" tabindex="0"></pre>
+        </div>
+      </details>
       <details class="gwb-help">
         <summary>启动与连接说明</summary>
         <ol>
-          <li>首次使用：在完整后端包内运行 <code>start-gemini.bat</code>，登录 Gemini。</li>
+          <li>Gemini：运行 <code>start-gemini.bat</code> 登录，再运行 <code>start-bridge-gemini.bat</code>。Codex：先执行 <code>codex login</code>，再运行 <code>start-bridge-codex.bat</code>。</li>
           <li>SillyTavern 可将完整后端包放入 <code>plugins/gemini-web-bridge</code> 并开启 <code>enableServerPlugins</code>。TauriTavern 或未启用服务端插件时，运行 <code>start-bridge-gemini.bat</code>，并保持服务窗口开启。</li>
           <li>点击“检测连接与模型”，再点击“应用到 API 连接”；本机后端无需真实 API Key。</li>
         </ol>
         <p>前端面板无法直接启动本机程序。浏览器 / 网页应用 / 桌面客户端的选择请在后端 <code>config.json</code> 中设置。</p>
-        <p>“读取酒馆后端”仅适用于已加载本项目服务端插件的 SillyTavern。普通连接检测不会发送对话或触发 Gemini 生成。</p>
+        <p>“读取酒馆后端”仅适用于已加载本项目服务端插件的 SillyTavern。TauriTavern 直接选择连接模式并检测；“发送测试”可独立验证生成。普通连接检测不会触发模型生成。</p>
       </details>
     </div>
   </details>

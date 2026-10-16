@@ -21,3 +21,11 @@
 #gwb_settings .gwb-help ol { padding-left: 1.5rem; }
 #gwb_settings .gwb-help li { margin-block: 0.5rem; }
 #gwb_settings small { opacity: 0.7; font-weight: normal; }
+#gwb_settings select, #gwb_settings textarea { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; }
+#gwb_settings .gwb-test-content { display: grid; gap: 0.5rem; padding-block: 0.5rem; }
+#gwb_settings .gwb-result { margin: 0; min-height: 3rem; max-height: 18rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; scrollbar-width: thin; scrollbar-color: var(--SmartThemeBodyColor, #aaa) transparent; }
+#gwb_settings .gwb-status { min-height: 2.8em; }
+#gwb_settings :is(button, summary, select):hover:not(:disabled) { filter: brightness(1.12); }
+#gwb_settings :is(button, summary):active:not(:disabled) { filter: brightness(0.92); }
+#gwb_settings :is(input, select, textarea, button, summary, pre):focus-visible { outline: 2px solid var(--SmartThemeBodyColor, #aaa); outline-offset: 2px; }
+#gwb_settings [aria-invalid="true"] { border-color: #d98181; }
